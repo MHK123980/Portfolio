@@ -7,6 +7,7 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || 'development',
   clientUrl: process.env.CLIENT_URL || 'http://localhost:3000',
   isDev: (process.env.NODE_ENV || 'development') === 'development',
+  databaseUrl: process.env.DATABASE_URL || process.env.MONGODB_URI || '',
   admin: {
     email: process.env.ADMIN_EMAIL || 'mhk@portfolio.manage',
     password: process.env.ADMIN_PASSWORD || 'portfolio@mhk.980',

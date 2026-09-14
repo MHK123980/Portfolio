@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { MongoClient, Db } from 'mongodb';
 import { DatabaseSchema, Project, ProjectRequest, ProjectRequestStatus, PortfolioSettings, AdminUser } from '../models/types.js';
 import { AuthService } from './auth.service.js';
 import { config } from '../config/env.js';
@@ -14,10 +15,15 @@ const DB_FILE = path.join(DATA_DIR, 'db.json');
 export class DbService {
   private static instance: DbService;
   private data: DatabaseSchema;
+  private mongoClient: MongoClient | null = null;
+  private mongoDb: Db | null = null;
+  private isMongoConnected: boolean = false;
+  private lastMongoSync: number = 0;
 
   private constructor() {
     this.ensureDataDirectory();
     this.data = this.loadDatabase();
+    this.initMongo();
   }
 
   public static getInstance(): DbService {
@@ -58,6 +64,83 @@ export class DbService {
     } catch (err) {
       // Fallback direct write if atomic rename is restricted on some Windows drives
       fs.writeFileSync(DB_FILE, serialized, 'utf-8');
+    }
+  }
+
+  private async initMongo(): Promise<void> {
+    if (!config.databaseUrl) {
+      return;
+    }
+    try {
+      this.mongoClient = new MongoClient(config.databaseUrl, {
+        serverSelectionTimeoutMS: 5000,
+        connectTimeoutMS: 5000,
+      });
+      await this.mongoClient.connect();
+      this.mongoDb = this.mongoClient.db('mhkportfolio');
+      this.isMongoConnected = true;
+      console.log('[MongoDB] Connected successfully to MongoDB Atlas cloud database.');
+      await this.syncWithMongo();
+    } catch (err: any) {
+      this.isMongoConnected = false;
+      console.warn(`[MongoDB] Notice: Cloud DB connection unavailable (${err.message}). Using local storage fallback.`);
+    }
+  }
+
+  public async syncWithMongo(): Promise<void> {
+    if (!this.mongoDb) return;
+    try {
+      const projectsCol = this.mongoDb.collection<Project>('projects');
+      const requestsCol = this.mongoDb.collection<ProjectRequest>('requests');
+      const settingsCol = this.mongoDb.collection<PortfolioSettings>('settings');
+      const adminCol = this.mongoDb.collection<AdminUser>('admin');
+
+      const count = await projectsCol.countDocuments();
+      if (count === 0) {
+        if (this.data.projects.length > 0) {
+          await projectsCol.insertMany(this.data.projects as any);
+        }
+        await adminCol.updateOne({}, { $set: this.data.admin }, { upsert: true });
+        await settingsCol.updateOne({}, { $set: this.data.settings }, { upsert: true });
+        console.log('[MongoDB] Seeded cloud database with initial portfolio data.');
+      } else {
+        const projects = await projectsCol.find({}).toArray();
+        const requests = await requestsCol.find({}).toArray();
+        const settings = await settingsCol.findOne({});
+        const admin = await adminCol.findOne({});
+
+        if (projects && projects.length > 0) {
+          this.data.projects = projects.map((p) => {
+            const { _id, ...rest } = p as any;
+            return rest as Project;
+          });
+        }
+        if (requests) {
+          this.data.requests = requests.map((r) => {
+            const { _id, ...rest } = r as any;
+            return rest as ProjectRequest;
+          });
+        }
+        if (settings) {
+          const { _id, ...rest } = settings as any;
+          this.data.settings = rest as PortfolioSettings;
+        }
+        if (admin) {
+          const { _id, ...rest } = admin as any;
+          this.data.admin = rest as AdminUser;
+        }
+        this.persist();
+        console.log(`[MongoDB] Synced ${this.data.projects.length} projects and ${this.data.requests.length} requests from cloud database.`);
+      }
+      this.lastMongoSync = Date.now();
+    } catch (err: any) {
+      console.warn('[MongoDB] Sync error:', err.message);
+    }
+  }
+
+  public async triggerRefresh(): Promise<void> {
+    if (this.isMongoConnected && Date.now() - this.lastMongoSync > 2500) {
+      await this.syncWithMongo();
     }
   }
 
@@ -455,6 +538,13 @@ export class DbService {
 
     this.data.projects.unshift(newProject);
     this.persist();
+
+    if (this.mongoDb) {
+      this.mongoDb.collection('projects').insertOne({ ...newProject } as any).catch((err) => {
+        console.warn('[MongoDB] Error saving project to cloud:', err.message);
+      });
+    }
+
     return newProject;
   }
 
@@ -501,6 +591,13 @@ export class DbService {
 
     this.data.projects[idx] = updatedProject;
     this.persist();
+
+    if (this.mongoDb) {
+      this.mongoDb.collection('projects').updateOne({ id }, { $set: { ...updatedProject } }, { upsert: true }).catch((err) => {
+        console.warn('[MongoDB] Error updating project in cloud:', err.message);
+      });
+    }
+
     return updatedProject;
   }
 
@@ -509,6 +606,11 @@ export class DbService {
     this.data.projects = this.data.projects.filter((p) => p.id !== id);
     if (this.data.projects.length !== initialLen) {
       this.persist();
+      if (this.mongoDb) {
+        this.mongoDb.collection('projects').deleteOne({ id }).catch((err) => {
+          console.warn('[MongoDB] Error deleting project from cloud:', err.message);
+        });
+      }
       return true;
     }
     return false;
@@ -523,6 +625,7 @@ export class DbService {
   // --- Project Request (Client Inquiries) Methods ---
 
   public getAllRequests(): ProjectRequest[] {
+    this.triggerRefresh().catch(() => {});
     return [...this.data.requests].sort((a, b) => {
       return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
@@ -544,6 +647,13 @@ export class DbService {
 
     this.data.requests.unshift(newRequest);
     this.persist();
+
+    if (this.mongoDb) {
+      this.mongoDb.collection('requests').insertOne({ ...newRequest } as any).catch((err) => {
+        console.warn('[MongoDB] Error saving request to cloud:', err.message);
+      });
+    }
+
     return newRequest;
   }
 
@@ -554,6 +664,13 @@ export class DbService {
     req.status = status;
     req.updatedAt = new Date().toISOString();
     this.persist();
+
+    if (this.mongoDb) {
+      this.mongoDb.collection('requests').updateOne({ id }, { $set: { status, updatedAt: req.updatedAt } }).catch((err) => {
+        console.warn('[MongoDB] Error updating request status in cloud:', err.message);
+      });
+    }
+
     return req;
   }
 
@@ -564,6 +681,13 @@ export class DbService {
     req.adminNotes = adminNotes;
     req.updatedAt = new Date().toISOString();
     this.persist();
+
+    if (this.mongoDb) {
+      this.mongoDb.collection('requests').updateOne({ id }, { $set: { adminNotes, updatedAt: req.updatedAt } }).catch((err) => {
+        console.warn('[MongoDB] Error updating request notes in cloud:', err.message);
+      });
+    }
+
     return req;
   }
 
@@ -580,6 +704,13 @@ export class DbService {
       updatedAt: new Date().toISOString(),
     };
     this.persist();
+
+    if (this.mongoDb) {
+      this.mongoDb.collection('settings').updateOne({}, { $set: { ...this.data.settings } }, { upsert: true }).catch((err) => {
+        console.warn('[MongoDB] Error updating settings in cloud:', err.message);
+      });
+    }
+
     return this.data.settings;
   }
 
@@ -594,8 +725,15 @@ export class DbService {
   }
 
   public updateAdminLastLogin(): void {
-    this.data.admin.lastLoginAt = new Date().toISOString();
+    const now = new Date().toISOString();
+    this.data.admin.lastLoginAt = now;
     this.persist();
+
+    if (this.mongoDb) {
+      this.mongoDb.collection('admin').updateOne({}, { $set: { lastLoginAt: now } }).catch((err) => {
+        console.warn('[MongoDB] Error updating admin login in cloud:', err.message);
+      });
+    }
   }
 }
 
