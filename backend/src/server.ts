@@ -7,8 +7,11 @@ const app = createApp();
 // Ensure DB is initialized
 dbService.getSettings();
 
-const server = app.listen(config.port, () => {
-  console.log(`
+let server: any = null;
+
+if (!process.env.VERCEL) {
+  server = app.listen(config.port, () => {
+    console.log(`
 =====================================================
   Portfolio Full-Stack Backend API Running
   Port: ${config.port}
@@ -18,18 +21,22 @@ const server = app.listen(config.port, () => {
   Database: backend/data/db.json (Authoritative Store)
   Admin ID: ${config.admin.email}
 =====================================================
-  `);
-});
-
-const shutdown = () => {
-  console.log('Received shutdown signal, closing server gracefully...');
-  server.close(() => {
-    console.log('Backend HTTP server closed.');
-    process.exit(0);
+    `);
   });
-};
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+  const shutdown = () => {
+    console.log('Received shutdown signal, closing server gracefully...');
+    if (server) {
+      server.close(() => {
+        console.log('Backend HTTP server closed.');
+        process.exit(0);
+      });
+    }
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+}
 
 export { app, server };
+export default app;
