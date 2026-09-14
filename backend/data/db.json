@@ -1,0 +1,340 @@
+{
+  "admin": {
+    "id": "admin-root",
+    "email": "mhk@portfolio.manage",
+    "passwordHash": "e697ca0deb73e2cb62436d43b9b3d571586d09e51ada130f8aa01a6deee19c2d1b2d253c0b3f594dd6033dc5d67a9484536bac47074121e17f602bc48060c802",
+    "salt": "20d3e217f0b9577a7fd719386e581150",
+    "createdAt": "2026-09-14T13:01:37.467Z"
+  },
+  "projects": [
+    {
+      "id": "proj-1",
+      "title": "XORA — Multi-Vendor Marketplace Ecosystem",
+      "slug": "xora-marketplace",
+      "shortDescription": "Native Android multi-tier commerce ecosystem bridging buyers, verified suppliers, and resellers.",
+      "fullDescription": "A comprehensive multi-tier marketplace platform engineered natively for Android, backed by Supabase and PostgreSQL with strict Row Level Security policies.",
+      "caseStudy": "XORA is an ecosystem engineered to connect buyers, suppliers/manufacturers, and independent resellers into a unified, secure commerce flow. It addresses the friction of fragmented distributor communication and disparate order processing through a cohesive Android mobile experience.",
+      "category": "Android",
+      "technologies": [
+        "Android",
+        "Kotlin",
+        "Jetpack Compose",
+        "Supabase",
+        "PostgreSQL",
+        "Row Level Security (RLS)",
+        "REST APIs",
+        "Coroutines"
+      ],
+      "thumbnail": "/images/projects/xora-preview.svg",
+      "gallery": [
+        "/images/projects/xora-preview.svg",
+        "/images/projects/xora-architecture.svg"
+      ],
+      "liveDemoUrl": "",
+      "githubUrl": "https://github.com/[YOUR GITHUB]/xora",
+      "date": "2024-04-10",
+      "publishedAt": "2026-09-13T13:01:37.468Z",
+      "featured": true,
+      "published": true,
+      "displayOrder": 1,
+      "roleContribution": "Designed and developed the Android client architecture in Kotlin, configured the Supabase backend schema and Row Level Security policies, and integrated REST endpoints for order and inventory management.",
+      "problem": "Traditional wholesale and multi-vendor distribution channels suffer from unverified seller risks, lack of real-time inventory visibility across resellers, and complex role-based data permissions.",
+      "solution": "Engineered an Android application with dynamic multi-persona navigation (Buyer, Supplier, Reseller), real-time catalogue indexing, role-gated queries via Supabase Row Level Security (RLS), and resilient offline-capable state synchronization.",
+      "challenges": "Balancing complex multi-tier security policies where suppliers can only manage their own listings while resellers require specialized commission calculations and inventory access without compromising proprietary pricing.",
+      "keyFeatures": [
+        "Multi-persona access control for buyers, suppliers, and resellers",
+        "Role-based database policies leveraging PostgreSQL Row Level Security (RLS)",
+        "Real-time product catalog & inventory tracking via Supabase API integration",
+        "Clean Architecture with MVVM, Kotlin Coroutines, and StateFlow",
+        "Secure authentication workflows with JWT token refresh",
+        "Comprehensive order lifecycle tracking and status transitions"
+      ],
+      "outcome": "Delivered an extensible, secure mobile foundation with strict database-level access controls and an intuitive user interface that scales smoothly across different device sizes.",
+      "createdAt": "2026-09-13T13:01:37.468Z",
+      "updatedAt": "2026-09-14T13:01:37.467Z"
+    },
+    {
+      "id": "proj-2",
+      "title": "Modern Web Application Platform",
+      "slug": "web-application-platform",
+      "shortDescription": "High-performance responsive web platform with API services and live data synchronization.",
+      "fullDescription": "A production-grade full-stack web application featuring React, TypeScript, and Express with real-time state management and secure authentication.",
+      "caseStudy": "Constructed a unified web application for data visualization, user access delegation, and real-time state synchronization.",
+      "category": "Full-Stack",
+      "technologies": [
+        "React",
+        "TypeScript",
+        "Node.js",
+        "Express",
+        "Tailwind CSS",
+        "PostgreSQL"
+      ],
+      "thumbnail": "/images/projects/web-platform.svg",
+      "gallery": [
+        "/images/projects/web-platform.svg"
+      ],
+      "liveDemoUrl": "https://demo.[YOUR DOMAIN]/web-platform",
+      "githubUrl": "https://github.com/[YOUR GITHUB]/web-platform",
+      "date": "2024-03-15",
+      "publishedAt": "2026-09-12T13:01:37.468Z",
+      "featured": false,
+      "published": true,
+      "displayOrder": 2,
+      "roleContribution": "Architected React frontend and Express REST endpoints.",
+      "keyFeatures": [
+        "Modular TypeScript architecture with custom reusable UI system",
+        "Express REST API with centralized validation and rate limiting",
+        "Interactive dashboards with responsive data filtering"
+      ],
+      "createdAt": "2026-09-12T13:01:37.468Z",
+      "updatedAt": "2026-09-14T13:01:37.467Z"
+    },
+    {
+      "id": "proj-3",
+      "title": "Enterprise Backend & Microservices Hub",
+      "slug": "enterprise-backend-hub",
+      "shortDescription": "Resilient Node.js API integration layer handling auth, validation, and data orchestration.",
+      "fullDescription": "A backend service architecture engineered for high throughput, data sanitization, third-party webhook processing, and unified REST endpoints.",
+      "category": "Web",
+      "technologies": [
+        "Node.js",
+        "TypeScript",
+        "Express",
+        "Zod",
+        "PostgreSQL"
+      ],
+      "thumbnail": "/images/projects/api-service.svg",
+      "gallery": [
+        "/images/projects/api-service.svg"
+      ],
+      "date": "2024-02-20",
+      "publishedAt": "2026-09-11T13:01:37.468Z",
+      "featured": false,
+      "published": true,
+      "displayOrder": 3,
+      "keyFeatures": [
+        "Strict Zod schema validation on incoming payloads",
+        "Automated rate limiting and honeypot bot defense",
+        "Centralized error interception and standardized responses"
+      ],
+      "createdAt": "2026-09-11T13:01:37.468Z",
+      "updatedAt": "2026-09-14T13:01:37.467Z"
+    },
+    {
+      "id": "proj-4",
+      "title": "Mobile Logistics & Dispatch Tracker",
+      "slug": "mobile-logistics-dispatch",
+      "shortDescription": "Native Android driver dispatch client with offline-first caching and real-time transit status.",
+      "fullDescription": "Engineered an Android mobile application utilizing Room SQLite database for persistent offline manifest records and automatic server sync.",
+      "category": "Android",
+      "technologies": [
+        "Android",
+        "Kotlin",
+        "Room SQLite",
+        "Coroutines",
+        "REST APIs"
+      ],
+      "thumbnail": "/images/projects/xora-preview.svg",
+      "gallery": [
+        "/images/projects/xora-preview.svg"
+      ],
+      "date": "2024-01-25",
+      "publishedAt": "2026-09-10T13:01:37.468Z",
+      "featured": false,
+      "published": true,
+      "displayOrder": 4,
+      "keyFeatures": [
+        "Offline-first synchronization with Room SQLite database",
+        "Dynamic status updates with background worker queue",
+        "Adaptive UI supporting high-contrast daylight conditions"
+      ],
+      "createdAt": "2026-09-10T13:01:37.468Z",
+      "updatedAt": "2026-09-14T13:01:37.467Z"
+    },
+    {
+      "id": "proj-5",
+      "title": "Real-Time Operational Analytics Portal",
+      "slug": "real-time-analytics-portal",
+      "shortDescription": "Interactive web analytics console monitoring operational telemetry and API uptime metrics.",
+      "fullDescription": "Built with React, TypeScript, and modern chart visualization primitives for low-latency operational reporting.",
+      "category": "Full-Stack",
+      "technologies": [
+        "React",
+        "TypeScript",
+        "Node.js",
+        "Express",
+        "Tailwind CSS"
+      ],
+      "thumbnail": "/images/projects/web-platform.svg",
+      "gallery": [
+        "/images/projects/web-platform.svg"
+      ],
+      "date": "2023-12-10",
+      "publishedAt": "2026-09-09T13:01:37.468Z",
+      "featured": false,
+      "published": true,
+      "displayOrder": 5,
+      "keyFeatures": [
+        "Dynamic metric breakdown across service categories",
+        "Keyboard-first navigation and dark ergonomics"
+      ],
+      "createdAt": "2026-09-09T13:01:37.468Z",
+      "updatedAt": "2026-09-14T13:01:37.467Z"
+    },
+    {
+      "id": "proj-6",
+      "title": "High-Throughput Webhook Processing Engine",
+      "slug": "webhook-processing-engine",
+      "shortDescription": "Event-driven Node.js ingestion engine delivering verified webhook payloads with retry backoff.",
+      "fullDescription": "Reliable webhook receiver verifying HMAC cryptographic signatures and buffering transaction payloads.",
+      "category": "Web",
+      "technologies": [
+        "Node.js",
+        "TypeScript",
+        "Express",
+        "PostgreSQL"
+      ],
+      "thumbnail": "/images/projects/api-service.svg",
+      "gallery": [
+        "/images/projects/api-service.svg"
+      ],
+      "date": "2023-11-18",
+      "publishedAt": "2026-09-08T13:01:37.468Z",
+      "featured": false,
+      "published": true,
+      "displayOrder": 6,
+      "keyFeatures": [
+        "Cryptographic HMAC SHA-256 payload verification",
+        "Exponential retry backoff strategy for downstream failures"
+      ],
+      "createdAt": "2026-09-08T13:01:37.468Z",
+      "updatedAt": "2026-09-14T13:01:37.467Z"
+    },
+    {
+      "id": "proj-7",
+      "title": "Offline-First Note & Task Sync Application",
+      "slug": "offline-note-sync-app",
+      "shortDescription": "Kotlin Android application with bidirectional delta synchronization and SQLite local cache.",
+      "fullDescription": "An Android productivity tool designed with strict Clean Architecture, MVVM, and Room database migrations.",
+      "category": "Android",
+      "technologies": [
+        "Android",
+        "Kotlin",
+        "Room SQLite",
+        "MVVM"
+      ],
+      "thumbnail": "/images/projects/xora-preview.svg",
+      "gallery": [
+        "/images/projects/xora-preview.svg"
+      ],
+      "date": "2023-10-05",
+      "publishedAt": "2026-09-07T13:01:37.468Z",
+      "featured": false,
+      "published": true,
+      "displayOrder": 7,
+      "keyFeatures": [
+        "Conflict-free local state resolution",
+        "Instantaneous search across indexed records"
+      ],
+      "createdAt": "2026-09-07T13:01:37.468Z",
+      "updatedAt": "2026-09-14T13:01:37.467Z"
+    },
+    {
+      "id": "proj-8",
+      "title": "Multi-Tenant Inventory Management System",
+      "slug": "multi-tenant-inventory-system",
+      "shortDescription": "Full-stack management console supporting segregated warehouse inventories and role permissions.",
+      "fullDescription": "Comprehensive business application built with React, Node.js, and PostgreSQL for distributed stock management.",
+      "category": "Full-Stack",
+      "technologies": [
+        "React",
+        "TypeScript",
+        "Node.js",
+        "PostgreSQL"
+      ],
+      "thumbnail": "/images/projects/web-platform.svg",
+      "gallery": [
+        "/images/projects/web-platform.svg"
+      ],
+      "date": "2023-09-12",
+      "publishedAt": "2026-09-06T13:01:37.468Z",
+      "featured": false,
+      "published": true,
+      "displayOrder": 8,
+      "keyFeatures": [
+        "Role-based permission gating",
+        "Exportable PDF and spreadsheet inventory reports"
+      ],
+      "createdAt": "2026-09-06T13:01:37.468Z",
+      "updatedAt": "2026-09-14T13:01:37.467Z"
+    },
+    {
+      "id": "proj-9",
+      "title": "Automated REST API Documentation Portal",
+      "slug": "automated-api-docs-portal",
+      "shortDescription": "Interactive schema-driven developer portal with live sandbox request execution.",
+      "fullDescription": "Developer portal automatically rendering OpenAPI endpoints with request syntax and response schema samples.",
+      "category": "Web",
+      "technologies": [
+        "React",
+        "TypeScript",
+        "Node.js",
+        "Express"
+      ],
+      "thumbnail": "/images/projects/api-service.svg",
+      "gallery": [
+        "/images/projects/api-service.svg"
+      ],
+      "date": "2023-08-14",
+      "publishedAt": "2026-09-05T13:01:37.468Z",
+      "featured": false,
+      "published": true,
+      "displayOrder": 9,
+      "keyFeatures": [
+        "Interactive sandbox execution",
+        "Real-time schema validation feedback"
+      ],
+      "createdAt": "2026-09-05T13:01:37.468Z",
+      "updatedAt": "2026-09-14T13:01:37.467Z"
+    },
+    {
+      "id": "proj-10",
+      "title": "Android Native UI Component Framework",
+      "slug": "android-ui-component-framework",
+      "shortDescription": "Modular Kotlin UI kit standardizing custom cards, animations, and typography for mobile apps.",
+      "fullDescription": "A reusable UI kit built with Jetpack Compose featuring dark-mode ergonomics and accessible touch targets.",
+      "category": "Android",
+      "technologies": [
+        "Android",
+        "Kotlin",
+        "Jetpack Compose"
+      ],
+      "thumbnail": "/images/projects/xora-preview.svg",
+      "gallery": [
+        "/images/projects/xora-preview.svg"
+      ],
+      "date": "2023-07-01",
+      "publishedAt": "2026-09-04T13:01:37.468Z",
+      "featured": false,
+      "published": true,
+      "displayOrder": 10,
+      "keyFeatures": [
+        "Reusable Jetpack Compose design primitives",
+        "WCAG compliant touch targets and contrast"
+      ],
+      "createdAt": "2026-09-04T13:01:37.468Z",
+      "updatedAt": "2026-09-14T13:01:37.467Z"
+    }
+  ],
+  "requests": [],
+  "settings": {
+    "availabilityStatus": "Available for New Projects",
+    "contactEmail": "mhk@portfolio.manage",
+    "githubUrl": "https://github.com/[YOUR GITHUB]",
+    "linkedinUrl": "https://linkedin.com/in/[YOUR LINKEDIN]",
+    "domain": "https://[YOUR DOMAIN]",
+    "developerName": "[YOUR NAME]",
+    "heroRole": "Android & Full-Stack Web Developer",
+    "updatedAt": "2026-09-14T13:01:37.467Z"
+  }
+}
