@@ -2,7 +2,13 @@
   "services": {
     "frontend": {
       "root": "frontend",
-      "framework": "vite"
+      "framework": "vite",
+      "rewrites": [
+        {
+          "source": "/(.*)",
+          "destination": "/index.html"
+        }
+      ]
     },
     "backend": {
       "root": "backend",
@@ -11,28 +17,21 @@
   },
   "rewrites": [
     {
-      "source": "/api(/.*)?",
+      "source": "/api",
       "destination": {
         "service": "backend"
       }
     },
     {
-      "source": "/assets/(.*)",
+      "source": "/api/(.*)",
       "destination": {
-        "service": "frontend"
-      }
-    },
-    {
-      "source": "/(.*\\.(?:ico|png|svg|jpg|jpeg|gif|webp|json|xml|txt|webmanifest))",
-      "destination": {
-        "service": "frontend"
+        "service": "backend"
       }
     },
     {
       "source": "/(.*)",
       "destination": {
-        "service": "frontend",
-        "path": "/index.html"
+        "service": "frontend"
       }
     }
   ]
