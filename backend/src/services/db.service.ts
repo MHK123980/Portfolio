@@ -7,10 +7,21 @@ import { AuthService } from './auth.service.js';
 import { config } from '../config/env.js';
 import { slugify } from '../utils/slugify.js';
 
-const DATA_DIR = fs.existsSync(path.resolve(process.cwd(), 'backend', 'data'))
+const IS_SERVERLESS = Boolean(
+  process.env.VERCEL ||
+  process.env.AWS_LAMBDA_FUNCTION_NAME ||
+  process.env.LAMBDA_TASK_ROOT
+);
+
+const READONLY_DATA_DIR = fs.existsSync(path.resolve(process.cwd(), 'backend', 'data'))
   ? path.resolve(process.cwd(), 'backend', 'data')
   : path.resolve(process.cwd(), 'data');
-const DB_FILE = path.join(DATA_DIR, 'db.json');
+const READONLY_DB_FILE = path.join(READONLY_DATA_DIR, 'db.json');
+
+const WRITABLE_DATA_DIR = IS_SERVERLESS
+  ? path.join('/tmp', 'mhk_portfolio_data')
+  : READONLY_DATA_DIR;
+const WRITABLE_DB_FILE = path.join(WRITABLE_DATA_DIR, 'db.json');
 
 export class DbService {
   private static instance: DbService;
@@ -34,18 +45,35 @@ export class DbService {
   }
 
   private ensureDataDirectory(): void {
-    if (!fs.existsSync(DATA_DIR)) {
-      fs.mkdirSync(DATA_DIR, { recursive: true });
+    try {
+      if (!fs.existsSync(WRITABLE_DATA_DIR)) {
+        fs.mkdirSync(WRITABLE_DATA_DIR, { recursive: true });
+      }
+    } catch (err: any) {
+      console.warn('[DbService] Could not create writable data directory:', err.message);
     }
   }
 
   private loadDatabase(): DatabaseSchema {
-    if (fs.existsSync(DB_FILE)) {
+    // 1. Try writable database file first (e.g. /tmp/mhk_portfolio_data/db.json)
+    if (fs.existsSync(WRITABLE_DB_FILE)) {
       try {
-        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+        const raw = fs.readFileSync(WRITABLE_DB_FILE, 'utf-8');
         return JSON.parse(raw);
       } catch (err) {
-        console.error('[DbService] Error reading database file, initializing with seeds:', err);
+        console.error('[DbService] Error reading writable database file:', err);
+      }
+    }
+
+    // 2. Try bundled seed file (e.g. backend/data/db.json)
+    if (fs.existsSync(READONLY_DB_FILE)) {
+      try {
+        const raw = fs.readFileSync(READONLY_DB_FILE, 'utf-8');
+        const parsed = JSON.parse(raw);
+        this.persist(parsed);
+        return parsed;
+      } catch (err) {
+        console.error('[DbService] Error reading bundled database file, initializing with seeds:', err);
       }
     }
 
@@ -55,15 +83,19 @@ export class DbService {
   }
 
   private persist(dataToSave: DatabaseSchema = this.data): void {
-    this.ensureDataDirectory();
-    const tempFile = `${DB_FILE}.${Date.now()}.tmp`;
-    const serialized = JSON.stringify(dataToSave, null, 2);
     try {
-      fs.writeFileSync(tempFile, serialized, 'utf-8');
-      fs.renameSync(tempFile, DB_FILE);
-    } catch (err) {
-      // Fallback direct write if atomic rename is restricted on some Windows drives
-      fs.writeFileSync(DB_FILE, serialized, 'utf-8');
+      this.ensureDataDirectory();
+      const tempFile = `${WRITABLE_DB_FILE}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`;
+      const serialized = JSON.stringify(dataToSave, null, 2);
+      try {
+        fs.writeFileSync(tempFile, serialized, 'utf-8');
+        fs.renameSync(tempFile, WRITABLE_DB_FILE);
+      } catch (innerErr) {
+        fs.writeFileSync(WRITABLE_DB_FILE, serialized, 'utf-8');
+      }
+    } catch (err: any) {
+      // Non-fatal warning: In-memory and MongoDB state remain intact even if local disk write fails
+      console.warn('[DbService] Disk write warning (state preserved in-memory/cloud):', err.message);
     }
   }
 

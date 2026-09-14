@@ -117,15 +117,6 @@ export const AdminLoginPage: React.FC = () => {
               )}
             </button>
           </form>
-
-          <div className="mt-6 pt-5 border-t border-slate-800 text-center space-y-1.5">
-            <p className="text-xs text-slate-500">
-              Sign in with your admin ID:
-            </p>
-            <p className="text-xs font-mono text-brand-cyan bg-dark-950 py-1.5 px-3 rounded-lg border border-slate-800 inline-block">
-              mhk@portfolio.manage
-            </p>
-          </div>
         </div>
 
         <p className="text-center mt-6">
